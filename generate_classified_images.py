@@ -15,6 +15,7 @@ print(data)
 coord = np.asarray(data.as_matrix())
 print(coord.shape)
 
+
 crop_size = 512
 num_opened_image = 'XX'
 for i in range(coord.shape[0]):
