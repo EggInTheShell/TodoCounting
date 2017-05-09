@@ -172,8 +172,17 @@ fcn.compile(loss='binary_crossentropy', optimizer=f_opt)
 history = fcn.fit_generator(gen, samples_per_epoch=BATCHSIZE * num_batches, nb_epoch=EPOCH)
 
 # save
-savepath = DATA_DIR + 'weight/fc1e1'
+savepath = DATA_DIR + 'weight/fc1e144'
 json_string = fcn.to_json()
 with open(savepath+'.json', "w") as f:
     f.write(json_string)
 fcn.save_weights(savepath+'_W.hdf5')
+
+model = fcn
+new_model = Model(input=model.inputs, output=merged)
+funcType = type(model.save)
+# monkeypatch the save to save just the underlying model
+def new_save(self_,filepath, overwrite=True):
+    model.save(filepath, overwrite)
+    new_model.save=funcType(new_save, new_model)
+    return new_model

@@ -92,3 +92,5 @@ ENV/
 *.xml
 .idea/TodoCounting.iml
 *.pkl
+data/pred_by_mean.csv
+data/pred_by_mean_minus_one.csv

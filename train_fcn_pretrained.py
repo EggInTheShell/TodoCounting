@@ -37,28 +37,31 @@ def fcn_model(colorshape=[3, 384, 512]):
     cls = 5
     color_input = Input(shape=colorshape)
 
+    vgg = VGG16(include_top=False, weights='imagenet', input_tensor=None, input_shape=[3, size[1], size[0]])
+    vgg.trainable = True
+
     x = GaussianNoise(0.1)(color_input)
     # use VGG
     # Block 1
-    x = Convolution2D(64, 3, 3, activation='relu', border_mode='same', name='block1_conv1')(x)
-    x = Convolution2D(64, 3, 3, activation='relu', border_mode='same', name='block1_conv2')(x)
+    x = Convolution2D(64, 3, 3, activation='relu', border_mode='same', name='block1_conv1', weights=vgg.layers[1].get_weights())(x)
+    x = Convolution2D(64, 3, 3, activation='relu', border_mode='same', name='block1_conv2', weights=vgg.layers[2].get_weights())(x)
     mp1 = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
 
     # Block 2
-    x = Convolution2D(128, 3, 3, activation='relu', border_mode='same', name='block2_conv1')(mp1)
-    x = Convolution2D(128, 3, 3, activation='relu', border_mode='same', name='block2_conv2')(x)
+    x = Convolution2D(128, 3, 3, activation='relu', border_mode='same', name='block2_conv1', weights=vgg.layers[4].get_weights())(mp1)
+    x = Convolution2D(128, 3, 3, activation='relu', border_mode='same', name='block2_conv2', weights=vgg.layers[5].get_weights())(x)
     mp2 = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
 
     # Block 3
-    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv1')(mp2)
-    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv2')(x)
-    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv3')(x)
+    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv1', weights=vgg.layers[7].get_weights())(mp2)
+    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv2', weights=vgg.layers[8].get_weights())(x)
+    x = Convolution2D(256, 3, 3, activation='relu', border_mode='same', name='block3_conv3', weights=vgg.layers[9].get_weights())(x)
     mp3 = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
 
     # Block 4
-    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv1')(mp3)
-    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv2')(x)
-    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv3')(x)
+    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv1', weights=vgg.layers[11].get_weights())(mp3)
+    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv2', weights=vgg.layers[12].get_weights())(x)
+    x = Convolution2D(512, 3, 3, activation='relu', border_mode='same', name='block4_conv3', weights=vgg.layers[13].get_weights())(x)
     mp4 = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
 
     # Block 5
@@ -85,6 +88,7 @@ def fcn_model(colorshape=[3, 384, 512]):
     x = merge([x, mp2], mode='concat', concat_axis=-3)
     x = Convolution2D(cls, 4, 4, activation='relu', border_mode='same')(x)  # => [?, 21, 12, 16]
     x = UpSampling2D()(x) # => [?, 21, 24, 16]
+    # mp4 = K.function([vgg.layers[0].input], [vgg.layers[4].output])
     x = merge([x, mp1], mode='concat', concat_axis=-3)
     x = Convolution2D(cls, 4, 4, activation='relu', border_mode='same')(x)  # => [?, 21, 12, 16]
     x = UpSampling2D()(x) # => [?, 21, 24, 16]

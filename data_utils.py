@@ -68,3 +68,15 @@ black_id_list = (
     857,  # Missing annotations on all sea lions (Kudos: @depthfirstsearch)
     941,  # 5 adult males not marked
 )
+
+# 回転を適用済みです。
+rotated_id_list = (
+    # From MismatchedTrainImages.txt
+    # 7,     # TrainDotted rotated 180 degrees. Hot patch in load_dotted_image()
+    # 215,   # TrainDotted rotated 180 degrees. Hot patch in load_dotted_image()
+    # 331,   # TrainDotted rotated 180 degrees. Hot patch in load_dotted_image()
+    # 344,   # TrainDotted rotated 180 degrees. Hot patch in load_dotted_image()
+    # 421,   # TrainDotted rotated 180 degrees. Hot patch in load_dotted_image()
+    # 530,   # TrainDotted rotated. Hot patch in load_dotted_image()
+    # 638,   # TrainDotted rotated. Hot patch in load_dotted_image()
+)
